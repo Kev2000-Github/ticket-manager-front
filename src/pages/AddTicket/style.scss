@@ -1,0 +1,57 @@
+.AddTicket{
+    align-items: start;
+    margin-top: 40px;
+    .CardHeader{
+        margin-bottom: 50px;
+    }
+    .CardBody{
+        flex-direction: column;
+        .help-topic{
+            margin-top: 20px;
+            min-width: 150px;
+        }
+        .fieldRow{
+            position: relative;
+            padding-bottom: 30px;
+            h3{
+                margin: 0;
+            }
+            p{
+                color: grey;
+                font-size: .9em;
+                margin: 0;
+                margin-top: 8px;
+            }
+            .ticketFieldWrapper{
+                margin-top: 10px;
+            }
+            .ticketArea{
+                background: red;
+            }
+            .dropzones{
+                display: flex;
+                column-gap: 30px;
+                .uploadComponent{
+                    margin-top: 20px;
+                }
+            }
+        }
+        .buttonRows{
+            display: flex;
+            column-gap: 30px;
+            justify-content: center;
+            position: relative;
+            margin-top: 10px;
+            &:after{
+              content: "";
+              pointer-events: none;
+              position: absolute;
+              top: -10px;
+              left: 0;
+              height: 100%;
+              width: 100%;
+              border-top: 1.5px solid rgba(90, 90, 90, 0.404);
+            }
+        }
+    }
+}
