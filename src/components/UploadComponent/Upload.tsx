@@ -7,7 +7,7 @@ interface Props {
     fileName?: String,
     id: string,
     onChange?: (img: File) => void,
-    value: File|null
+    value: File|null,
 }
 
 export function UploadImg({

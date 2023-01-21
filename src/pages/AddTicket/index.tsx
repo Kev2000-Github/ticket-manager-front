@@ -4,7 +4,10 @@ import { useHistory } from 'react-router-dom';
 import { CustomTextArea } from '../../components/CustomTextArea/CustomTextArea';
 import { CustomTextField } from '../../components/CustomTextField/CustomTextField'
 import { UploadImg } from '../../components/UploadComponent/Upload'
+import Swal from 'sweetalert2'
 import './style.scss';
+import { getBase64 } from '../../utils';
+import axios from 'axios';
 
 export function AddTicket() {
   const history = useHistory()
@@ -22,7 +25,22 @@ export function AddTicket() {
     history.push('/')
   }
 
-  const onSubmit = () => {
+  const onSubmit = (e:React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    if(!invoiceImg || !warrantyImg){
+      console.log(invoiceImg)
+      const messageInvoice = invoiceImg? "":"se require imagen de la <b>Factura</b>"
+      const messageWarranty = warrantyImg? "":"se requiere imagen de la <b>Garantia</b>"
+      const message = [messageInvoice, messageWarranty].join('<br>')
+      Swal.fire({
+        icon: 'info',
+        html: message,
+        showCloseButton: true,
+        showConfirmButton: true
+      })
+      return
+    }
+
     const data = {
       name,
       email,
@@ -31,13 +49,40 @@ export function AddTicket() {
       warranty,
       details,
       helpTopic,
-      invoiceImg,
-      warrantyImg
+      invoiceImg: invoiceImg ? getBase64(invoiceImg):null,
+      warrantyImg: warrantyImg ? getBase64(warrantyImg):null
     }
-    console.log(data)
+    Swal.fire({
+      title: "Generando Ticket...",
+      allowEscapeKey: false,
+      allowOutsideClick: false,
+      didOpen: () => {
+        Swal.showLoading(null)
+        axios.post("http://127.0.0.1", data)
+          .then(() => {
+            Swal.fire({
+              title: "Ticket Creado!",
+              icon: 'success',
+              showConfirmButton: true,
+              timer: 2000,
+              didClose: () => {
+                clearData()
+              }
+            })
+          })
+          .catch(err => {
+            Swal.fire({
+              title: "Oops...",
+              icon: 'error',
+              text: "Algo salio mal...",
+              showConfirmButton: true
+            })
+          })
+      }
+    })
   }
 
-  const onReset = () => {
+  const clearData = () => {
     setName('')
     setEmail('')
     setPhone('')
@@ -49,6 +94,11 @@ export function AddTicket() {
     setWarrantyImg(null)
   }
 
+  const onReset = (e:React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    clearData()
+  }
+
   return (
     <div className="Home AddTicket">
       <div className='Container'>
@@ -56,7 +106,7 @@ export function AddTicket() {
           <h2>Rellene el Formulario para abrir un ticket nuevo</h2>
         </div>
         <div className='CardBody'>
-            <FormControl
+            <form
               onSubmit={onSubmit}
               onReset={onReset}
             >
@@ -69,6 +119,7 @@ export function AddTicket() {
                     para efectos de la garantia:
                 </p>
                 <CustomTextField
+                    required
                     className={"ticketField"}
                     slug={"personName"}
                     type={"text"}
@@ -84,7 +135,8 @@ export function AddTicket() {
                     Email de la persona de contacto
                     para efectos de la garantia:
                 </p>
-                <CustomTextField 
+                <CustomTextField
+                    required
                     className={"ticketField"}
                     slug={"email"}
                     type={"email"}
@@ -102,6 +154,7 @@ export function AddTicket() {
                     para efectos de la garantia:
                 </p>
                 <CustomTextField 
+                    required
                     className={"ticketField"}
                     slug={"telefono"}
                     type={"text"}
@@ -118,6 +171,7 @@ export function AddTicket() {
                     para que podamos ubicarnos mejor en el problema
                 </p>
                 <Select
+                  required
                   labelId="help-topic"
                   value={helpTopic}
                   variant={"standard"}
@@ -134,7 +188,8 @@ export function AddTicket() {
                 <h3>
                     Nro de factura
                 </h3>
-                <CustomTextField 
+                <CustomTextField
+                    required 
                     className={"ticketField"}
                     slug={"invoiceNumber"}
                     type={"text"}
@@ -147,6 +202,7 @@ export function AddTicket() {
                     Nro de Garantia
                 </h3>
                 <CustomTextField 
+                    required
                     className={"ticketField"}
                     slug={"WarrantyNumber"}
                     type={"text"}
@@ -164,7 +220,8 @@ export function AddTicket() {
                     aparece en la factura, modelo del producto y 
                     estado del pais donde se encuentra.
                 </p>
-                <CustomTextArea 
+                <CustomTextArea
+                    required 
                     slug={"details"}
                     withLabel={false}
                     value={details}
@@ -193,17 +250,17 @@ export function AddTicket() {
                 </div>
               </div>
               <div className='buttonRows'>
-                <button onClick={onSubmit} className='themedButton'>
+                <button type='submit' className='themedButton'>
                     Enviar Ticket
                 </button>
-                <button onClick={onReset} type="reset" className='themedButton'>
+                <button type="reset" className='themedButton'>
                     Restablecer
                 </button>
                 <button onClick={onCancel} type="button" className='themedButton'>
                     Cancelar
                 </button>
               </div>
-            </FormControl>
+            </form>
         </div>
       </div>
     </div>

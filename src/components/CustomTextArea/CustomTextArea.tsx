@@ -7,7 +7,8 @@ interface Props {
     slug?: string,
     onChange?: ChangeEventHandler<HTMLTextAreaElement>,
     withLabel?: Boolean,
-    value?: string
+    value?: string,
+    required?: boolean
 }
 
 export function CustomTextArea({
@@ -16,7 +17,8 @@ export function CustomTextArea({
     onChange,
     slug,
     withLabel = true,
-    value
+    value,
+    required
 }: Props){
     const [isFocus, setIsFocus] = useState(false)
     const [characterCount, setCharacterCount] = useState(0)
@@ -57,6 +59,7 @@ export function CustomTextArea({
                 ""
             }
             <textarea
+                required={required? required:false}
                 value={value}
                 onChange={onChangeHOC}
                 onFocus={onFocus} 

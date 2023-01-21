@@ -9,7 +9,8 @@ interface Props {
     type?: "email"|"text",
     autoComplete?: "off"|"on",
     withLabel?: Boolean,
-    value?: string
+    value?: string,
+    required?: boolean
 }
 
 export function CustomTextField({
@@ -20,7 +21,8 @@ export function CustomTextField({
     type,
     autoComplete,
     withLabel = true,
-    value
+    value,
+    required
 }: Props){
     const [isFocus, setIsFocus] = useState(false)
     const [characterCount, setCharacterCount] = useState(0)
@@ -61,6 +63,7 @@ export function CustomTextField({
                 ""
             }
             <input
+                required={required? required: false}
                 value={value}
                 onChange={onChangeHOC}
                 onFocus={onFocus} 
