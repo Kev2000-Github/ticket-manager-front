@@ -1,0 +1,26 @@
+.navbar{
+    margin: 0;
+    background: white;
+    box-shadow: 1px 0px 10px rgba(0, 0, 0, 0.349);
+    ul{
+        display: flex;
+        margin: 0;
+        list-style: none;
+        justify-content: flex-end;
+        font-weight: 500;
+        color: rgba(128, 128, 128, 0.753);
+        letter-spacing: 1px;
+        li{
+            padding: 20px;
+            cursor: pointer;
+            a{
+                text-decoration: none;
+                color: rgba(128, 128, 128, 0.753);
+            }
+            transition: .5s cubic-bezier(0.075, 0.82, 0.165, 1);
+            &:hover{
+                background: rgba(150, 149, 149, 0.233)
+            }
+        }
+    }
+}

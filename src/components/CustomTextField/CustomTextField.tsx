@@ -73,7 +73,11 @@ export function CustomTextField({
                 type={type ? type : "text"}
                 autoComplete={autoComplete ? autoComplete : "on"}
             />
-            <span className={`border ${isFocus ? "focused" : ""}`}></span>
+            <span className={`
+                border 
+                ${isFocus ? "focused" : ""}
+                ${characterCount > 0 ? "filled" : ""}
+            `}></span>
         </div>
     )
 }

@@ -61,7 +61,8 @@ $focusedColor: #000;
             left: 0;
             top: 0;
         }
-        &.focused:before, &.focused:after{
+        &.focused:before, &.focused:after, 
+        &.filled:before, &.filled:after{
             border-color: $focusedColor;
             width: 99%;
             height: 94%;
