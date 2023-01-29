@@ -1,3 +1,4 @@
+import axios from "axios";
 
 export const getBase64 = (file: File) => {
     const reader = new FileReader();
@@ -24,4 +25,27 @@ export const getHour = (date: Date) => {
     const min = date.getMinutes()
     const sec = date.getSeconds()
     return [hour, min, sec].join(":")
+}
+
+const DEFAULT_HEADERS = {}
+
+export const sendRequest = {
+    GET: async (url: string) => {
+        try{
+            const resp = await axios.get(url, {headers: DEFAULT_HEADERS})
+            return resp?.data
+        }
+        catch(err){
+            console.error(err)
+        }
+    },
+    POST: async (url: string, data: object) => {
+        try{
+            const resp = await axios.post(url, data, {headers: DEFAULT_HEADERS})
+            return resp?.data
+        }
+        catch(err){
+            console.error(err)
+        }
+    }
 }

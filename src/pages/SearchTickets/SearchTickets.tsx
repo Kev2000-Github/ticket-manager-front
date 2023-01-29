@@ -2,6 +2,8 @@ import { Navbar } from "../../components/Navbar/Navbar"
 import {useState, useEffect, ChangeEvent} from "react"
 import { CustomizedTable } from "../../components/Table/Table"
 import './index.scss'
+import { sendRequest } from "../../utils"
+import { config } from "../../config"
 
 export type ticket = {
     id: string,
@@ -12,10 +14,36 @@ export type ticket = {
     updatedAt: Date
 }
 
+const filterOpen = "?state=2"
+const filterClose = "?state=1"
+
 export const SearchTickets = () => {
     const[tickets, setTickets] = useState<Array<ticket>>([])
-    const [page, setPage] = useState(0)
-    const [rowsPerPage, setRowsPerPage] = useState(5)
+    const [page, setPage] = useState<number>(0)
+    const [rowsPerPage, setRowsPerPage] = useState<number>(5)
+    const [filter, setFilter] = useState<string>("")
+    useEffect(() => {
+        getTickets()
+    },[filter])
+
+    const getTickets = async () => {
+        const link = `${config.BACK_URL}/ticket${filter}`
+        const tickets = await sendRequest.GET(link)
+        if(tickets){
+            const ticketsParsed = tickets.map(ticket => {
+                const ticketParsed = {
+                    id: `${ticket.id}`,
+                    state: ticket.state.name,
+                    subject: ticket.subject,
+                    department: ticket.department.name,
+                    createdAt: new Date(ticket.created_at),
+                    updatedAt: new Date(ticket.updated_at)
+                }
+                return ticketParsed
+            })
+            setTickets(ticketsParsed)
+        }
+    }
 
     const handlePage = (_:any, newPage: number) => {
         setPage(newPage)
@@ -25,70 +53,13 @@ export const SearchTickets = () => {
         setRowsPerPage(Number(e.target.value))
         setPage(0)
     }
-    
-    useEffect(() => {
-        const createdAt = new Date()
-        const updatedAt = new Date()
-        const data = [
-            {
-                id: "123",
-                state: "state",
-                subject: "123",
-                department: "123",
-                createdAt,
-                updatedAt
-            },
-            {
-                id: "124",
-                state: "state",
-                subject: "1234",
-                department: "1423",
-                createdAt,
-                updatedAt
-            },
-            {
-                id: "1244",
-                state: "sta4te",
-                subject: "12344",
-                department: "14423",
-                createdAt,
-                updatedAt
-            },
-            {
-                id: "12442",
-                state: "sta4te",
-                subject: "12344",
-                department: "14423",
-                createdAt,
-                updatedAt
-            },
-            {
-                id: "12r442",
-                state: "sta4te",
-                subject: "12344",
-                department: "14423",
-                createdAt,
-                updatedAt
-            },
-            {
-                id: "1244fg2",
-                state: "sta4te",
-                subject: "12344",
-                department: "14423",
-                createdAt,
-                updatedAt
-            },
-            {
-                id: "1244fewg2",
-                state: "sta4te",
-                subject: "12344",
-                department: "14423",
-                createdAt,
-                updatedAt
-            },
-        ]
-        setTickets(data)
-    },[])
+
+    const handleFilter = (e:React.MouseEvent<HTMLElement>) => {
+        //@ts-ignore
+        const filterString = `?state=${e.target.name}`
+        const newFilter = filter === filterString ? "" : filterString
+        setFilter(newFilter)
+    }
 
     return (
         <div className="SearchTicketsBody">
@@ -100,13 +71,21 @@ export const SearchTickets = () => {
                             Filtros
                         </p>
                         <div className="buttonRow">
-                            <button className="themedButton">
+                            <button 
+                                name="1"
+                                className="themedButton"
+                                onClick={handleFilter}>
                                 Abiertos
                             </button>
-                            <button className="themedButton">
+                            <button
+                                name="2"
+                                className="themedButton"
+                                onClick={handleFilter}>
                                 Cerrados
                             </button>
-                            <button className="themedButton">
+                            <button
+                                className="themedButton"
+                                onClick={() => getTickets()}>
                                 Refrescar
                             </button>
                         </div>
