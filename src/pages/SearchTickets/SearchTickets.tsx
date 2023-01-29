@@ -14,9 +14,6 @@ export type ticket = {
     updatedAt: Date
 }
 
-const filterOpen = "?state=2"
-const filterClose = "?state=1"
-
 export const SearchTickets = () => {
     const[tickets, setTickets] = useState<Array<ticket>>([])
     const [page, setPage] = useState<number>(0)
@@ -59,6 +56,7 @@ export const SearchTickets = () => {
         const filterString = `?state=${e.target.name}`
         const newFilter = filter === filterString ? "" : filterString
         setFilter(newFilter)
+        setPage(0)
     }
 
     return (

@@ -1,5 +1,5 @@
 import { MenuItem, Select } from '@mui/material';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { CustomTextArea } from '../../components/CustomTextArea/CustomTextArea';
 import { CustomTextField } from '../../components/CustomTextField/CustomTextField'
@@ -7,11 +7,18 @@ import { UploadImg } from '../../components/UploadComponent/Upload'
 import { Navbar } from '../../components/Navbar/Navbar'
 import Swal from 'sweetalert2'
 import './style.scss';
-import { getBase64 } from '../../utils';
-import axios from 'axios';
+import { getBase64, sendRequest } from '../../utils';
+import { config } from '../../config';
+
+interface helpTopic {
+  id: number,
+  name: string
+}
 
 export function AddTicket() {
   const history = useHistory()
+  const [helpTopics, setHelpTopics] = useState<Array<helpTopic>>([])
+  const [subject, setSubject] = useState<string>('')
   const [name, setName] = useState<string>('')
   const [email, setEmail] = useState<string>('')
   const [phone, setPhone] = useState<string>('')
@@ -22,14 +29,23 @@ export function AddTicket() {
   const [warrantyImg, setWarrantyImg] = useState<File|null>(null)
   const [invoiceImg, setInvoiceImg] = useState<File|null>(null)
 
+  useEffect(() => {
+    getHelpTopic()
+  }, [])
+
+  const getHelpTopic = async () => {
+    const link = `${config.BACK_URL}/helptopic`
+    const helptopics = await sendRequest.GET(link)
+    setHelpTopics(helptopics)
+  }
+
   const onCancel= () => {
     history.push('/')
   }
 
-  const onSubmit = (e:React.FormEvent<HTMLFormElement>) => {
+  const onSubmit = async (e:React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     if(!invoiceImg || !warrantyImg){
-      console.log(invoiceImg)
       const messageInvoice = invoiceImg? "":"se require imagen de la <b>Factura</b>"
       const messageWarranty = warrantyImg? "":"se requiere imagen de la <b>Garantia</b>"
       const message = [messageInvoice, messageWarranty].join('<br>')
@@ -41,44 +57,37 @@ export function AddTicket() {
       })
       return
     }
-
     const data = {
-      name,
-      email,
-      phone,
-      invoice,
-      warranty,
-      details,
-      helpTopic,
-      invoiceImg: invoiceImg ? getBase64(invoiceImg):null,
-      warrantyImg: warrantyImg ? getBase64(warrantyImg):null
+      subject,
+      customer_name: name,
+      customer_email: email,
+      customer_phone_number: phone,
+      invoice_number: invoice,
+      warranty_number: warranty,
+      detail: details,
+      invoice_image: invoiceImg ? await getBase64(invoiceImg): null,
+      warranty_certificate: warrantyImg ? await getBase64(warrantyImg): null,
+      help_topic_id: helpTopic,
+      department_id: 1,
+      created_by_id: 1
     }
     Swal.fire({
       title: "Generando Ticket...",
       allowEscapeKey: false,
       allowOutsideClick: false,
-      didOpen: () => {
+      didOpen: async () => {
         Swal.showLoading(null)
-        axios.post("http://127.0.0.1", data)
-          .then(() => {
-            Swal.fire({
-              title: "Ticket Creado!",
-              icon: 'success',
-              showConfirmButton: true,
-              timer: 2000,
-              didClose: () => {
-                clearData()
-              }
-            })
-          })
-          .catch(err => {
-            Swal.fire({
-              title: "Oops...",
-              icon: 'error',
-              text: "Algo salio mal...",
-              showConfirmButton: true
-            })
-          })
+        const link = `${config.BACK_URL}/ticket`
+        await sendRequest.POST(link, data)
+        Swal.fire({
+          title: "Ticket Creado!",
+          icon: 'success',
+          showConfirmButton: true,
+          timer: 2000,
+          didClose: () => {
+            clearData()
+          }
+        })
       }
     })
   }
@@ -113,6 +122,22 @@ export function AddTicket() {
                 onSubmit={onSubmit}
                 onReset={onReset}
               >
+                <div className='fieldRow'>
+                  <h3>
+                      Asunto
+                  </h3>
+                  <p>
+                      Asunto del ticket:
+                  </p>
+                  <CustomTextField
+                      required
+                      className={"ticketField"}
+                      slug={"subject"}
+                      type={"text"}
+                      value={subject}
+                      onChange={(val) => setSubject(val.target.value)}
+                  />
+                </div>
                 <div className='fieldRow'>
                   <h3>
                       Nombre
@@ -182,9 +207,18 @@ export function AddTicket() {
                     MenuProps={{ disableScrollLock: true }}
                     onChange={(val) => setHelpTopic(val.target.value)}
                   >
-                    <MenuItem value={"B"}>B</MenuItem>
-                    <MenuItem value={"BC"}>BC</MenuItem>
-                    <MenuItem value={"BD"}>BD</MenuItem>
+                    {
+                      helpTopics.map((currentHelp: helpTopic) => {
+                        return (
+                          <MenuItem
+                            key={currentHelp.id}
+                            value={currentHelp.id}
+                          >
+                            {currentHelp.name}
+                          </MenuItem>
+                        )
+                      })
+                    }
                   </Select>
                 </div>
                 <div className='fieldRow'>

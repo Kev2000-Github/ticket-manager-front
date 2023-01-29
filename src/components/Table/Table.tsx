@@ -3,7 +3,7 @@ import TableCell, { tableCellClasses }  from '@mui/material/TableCell'
 import { ChangeEvent } from "react";
 import { ticket } from "../../pages/SearchTickets/SearchTickets";
 import { getDate, getHour } from "../../utils";
-
+import './index.scss'
 interface Props {
     rows: Array<ticket>
     page: number,
@@ -26,15 +26,15 @@ export function CustomizedTable({
 
     return (
       <TableContainer component={Paper}>
-        <Table sx={{ minWidth: 700 }} aria-label="customized table">
+        <Table aria-label="customized table">
           <TableHead>
             <TableRow>
               <StyledTableCell>Ticket #</StyledTableCell>
-              <StyledTableCell align="right">Creado</StyledTableCell>
-              <StyledTableCell align="right">Actualizado</StyledTableCell>
-              <StyledTableCell align="right">Estado</StyledTableCell>
-              <StyledTableCell align="right">Asunto</StyledTableCell>
-              <StyledTableCell align="right">Departamento</StyledTableCell>
+              <StyledTableCell align="center">Creado</StyledTableCell>
+              <StyledTableCell align="center">Actualizado</StyledTableCell>
+              <StyledTableCell align="center">Estado</StyledTableCell>
+              <StyledTableCell align="center">Asunto</StyledTableCell>
+              <StyledTableCell align="center">Departamento</StyledTableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -45,11 +45,11 @@ export function CustomizedTable({
                 <StyledTableCell component="th" scope="row">
                   {row.id}
                 </StyledTableCell>
-                <StyledTableCell align="right">{getDate(row.createdAt)}</StyledTableCell>
-                <StyledTableCell align="right">{`${getDate(row.updatedAt)} - ${getHour(row.updatedAt)}`}</StyledTableCell>
-                <StyledTableCell align="right">{row.state}</StyledTableCell>
-                <StyledTableCell align="right">{row.subject}</StyledTableCell>
-                <StyledTableCell align="right">{row.department}</StyledTableCell>
+                <StyledTableCell align="center"><div className="tableCell">{getDate(row.createdAt)}</div></StyledTableCell>
+                <StyledTableCell align="center"><div className="tableCell noWrap">{`${getDate(row.updatedAt)} - ${getHour(row.updatedAt)}`}</div></StyledTableCell>
+                <StyledTableCell align="center"><div className="tableCell">{row.state}</div></StyledTableCell>
+                <StyledTableCell align="center"><div className="tableCell noWrap">{row.subject}</div></StyledTableCell>
+                <StyledTableCell align="center"><div className="tableCell">{row.department}</div></StyledTableCell>
               </StyledTableRow>
             ))}
             {emptyRows > 0 && (

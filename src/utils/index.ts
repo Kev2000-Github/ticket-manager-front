@@ -1,14 +1,17 @@
 import axios from "axios";
+import Swal from "sweetalert2";
 
 export const getBase64 = (file: File) => {
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = function () {
-        return reader.result
-    };
-    reader.onerror = function (error) {
-        console.log('Error: ', error);
-    };
+    return new Promise(resolve => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = function () {
+            resolve(reader.result)
+        };
+        reader.onerror = function (error) {
+            console.log('Error: ', error);
+        };
+    })
 }
 
 export const getDate = (date: Date) => {
@@ -46,6 +49,12 @@ export const sendRequest = {
         }
         catch(err){
             console.error(err)
+            Swal.fire({
+                title: "Oops...",
+                icon: 'error',
+                text: "Algo salio mal...",
+                showConfirmButton: true
+              })
         }
     }
 }
